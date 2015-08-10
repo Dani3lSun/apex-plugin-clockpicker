@@ -1,6 +1,6 @@
   /*-------------------------------------
    * ClockPicker Functions
-   * Version: 1.0 (03.08.2015)
+   * Version: 1.1 (10.08.2015)
    * Author:  Daniel Hochleitner
    *-------------------------------------
   */
@@ -20,6 +20,7 @@
     l_align         apex_application_page_items.attribute_02%TYPE := p_item.attribute_02;
     l_autoclose     apex_application_page_items.attribute_03%TYPE := p_item.attribute_03;
     l_done_btn_text apex_application_page_items.attribute_04%TYPE := p_item.attribute_04;
+    l_12h_mode      apex_application_page_items.attribute_04%TYPE := p_item.attribute_05;
   
     l_onload_string   VARCHAR2(2000);
     l_html_string     VARCHAR2(2000);
@@ -68,13 +69,15 @@
     
       -- Include Bootstrap JS
       apex_javascript.add_library(p_name           => 'bootstrap.min',
-                                  p_directory      => p_plugin.file_prefix || 'js/',
+                                  p_directory      => p_plugin.file_prefix ||
+                                                      'js/',
                                   p_version        => NULL,
                                   p_skip_extension => FALSE);
     
       -- Include ClockPicker JS
       apex_javascript.add_library(p_name           => 'bootstrap-clockpicker.min',
-                                  p_directory      => p_plugin.file_prefix || 'js/',
+                                  p_directory      => p_plugin.file_prefix ||
+                                                      'js/',
                                   p_version        => NULL,
                                   p_skip_extension => FALSE);
       --
@@ -93,6 +96,9 @@
                          apex_javascript.add_attribute(p_name      => 'donetext',
                                                        p_value     => l_done_btn_text,
                                                        p_add_comma => TRUE) ||
+                         apex_javascript.add_attribute(p_name      => 'twelvehour',
+                                                       p_value     => l_12h_mode,
+                                                       p_add_comma => TRUE) ||
                          apex_javascript.add_attribute(p_name      => 'default',
                                                        p_value     => 'now',
                                                        p_add_comma => FALSE) ||
@@ -107,8 +113,9 @@
       apex_javascript.add_inline_code(p_code => l_onload_string);
       --
     END IF;
-  
+    --
     l_result.is_navigable := TRUE;
-  
+    --
     RETURN(l_result);
-  END;
+    --
+  END render_clockpicker;

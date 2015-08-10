@@ -36,7 +36,7 @@ wwv_flow_api.create_plugin(
 ,p_plsql_code=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
 '  /*-------------------------------------',
 '   * ClockPicker Functions',
-'   * Version: 1.0 (03.08.2015)',
+'   * Version: 1.1 (10.08.2015)',
 '   * Author:  Daniel Hochleitner',
 '   *-------------------------------------',
 '  */',
@@ -56,6 +56,7 @@ wwv_flow_api.create_plugin(
 '    l_align         apex_application_page_items.attribute_02%TYPE := p_item.attribute_02;',
 '    l_autoclose     apex_application_page_items.attribute_03%TYPE := p_item.attribute_03;',
 '    l_done_btn_text apex_application_page_items.attribute_04%TYPE := p_item.attribute_04;',
+'    l_12h_mode      apex_application_page_items.attribute_04%TYPE := p_item.attribute_05;',
 '  ',
 '    l_onload_string   VARCHAR2(2000);',
 '    l_html_string     VARCHAR2(2000);',
@@ -104,13 +105,15 @@ wwv_flow_api.create_plugin(
 '    ',
 '      -- Include Bootstrap JS',
 '      apex_javascript.add_library(p_name           => ''bootstrap.min'',',
-'                                  p_directory      => p_plugin.file_prefix || ''js/'',',
+'                                  p_directory      => p_plugin.file_prefix ||',
+'                                                      ''js/'',',
 '                                  p_version        => NULL,',
 '                                  p_skip_extension => FALSE);',
 '    ',
 '      -- Include ClockPicker JS',
 '      apex_javascript.add_library(p_name           => ''bootstrap-clockpicker.min'',',
-'                                  p_directory      => p_plugin.file_prefix || ''js/'',',
+'                                  p_directory      => p_plugin.file_prefix ||',
+'                                                      ''js/'',',
 '                                  p_version        => NULL,',
 '                                  p_skip_extension => FALSE);',
 '      --',
@@ -129,6 +132,9 @@ wwv_flow_api.create_plugin(
 '                         apex_javascript.add_attribute(p_name      => ''donetext'',',
 '                                                       p_value     => l_done_btn_text,',
 '                                                       p_add_comma => TRUE) ||',
+'                         apex_javascript.add_attribute(p_name      => ''twelvehour'',',
+'                                                       p_value     => l_12h_mode,',
+'                                                       p_add_comma => TRUE) ||',
 '                         apex_javascript.add_attribute(p_name      => ''default'',',
 '                                                       p_value     => ''now'',',
 '                                                       p_add_comma => FALSE) ||',
@@ -143,11 +149,12 @@ wwv_flow_api.create_plugin(
 '      apex_javascript.add_inline_code(p_code => l_onload_string);',
 '      --',
 '    END IF;',
-'  ',
+'    --',
 '    l_result.is_navigable := TRUE;',
-'  ',
+'    --',
 '    RETURN(l_result);',
-'  END;'))
+'    --',
+'  END render_clockpicker;'))
 ,p_render_function=>'render_clockpicker'
 ,p_standard_attributes=>'VISIBLE:SESSION_STATE:READONLY:ESCAPE_OUTPUT:ELEMENT:WIDTH:ELEMENT_OPTION'
 ,p_substitute_attributes=>true
@@ -267,6 +274,34 @@ wwv_flow_api.create_plugin_attribute(
 ,p_help_text=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
 '<strong>Done Button Text:</strong><br>',
 'When set to "autoclose false" a done button to close is displayed. Enter the displayed text.'))
+);
+wwv_flow_api.create_plugin_attribute(
+ p_id=>wwv_flow_api.id(11253106212067129695)
+,p_plugin_id=>wwv_flow_api.id(11117833923977660441)
+,p_attribute_scope=>'COMPONENT'
+,p_attribute_sequence=>5
+,p_display_sequence=>35
+,p_prompt=>'12h mode'
+,p_attribute_type=>'SELECT LIST'
+,p_is_required=>true
+,p_default_value=>'false'
+,p_is_translatable=>false
+,p_lov_type=>'STATIC'
+,p_help_text=>'Choose if 12h mode (am/pm) is on or off.'
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(11253108041551130509)
+,p_plugin_attribute_id=>wwv_flow_api.id(11253106212067129695)
+,p_display_sequence=>10
+,p_display_value=>'True'
+,p_return_value=>'true'
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(11253108910592131258)
+,p_plugin_attribute_id=>wwv_flow_api.id(11253106212067129695)
+,p_display_sequence=>20
+,p_display_value=>'False'
+,p_return_value=>'false'
 );
 end;
 /

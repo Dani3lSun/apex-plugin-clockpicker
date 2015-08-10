@@ -161,10 +161,10 @@ wwv_flow_api.create_plugin(
 ,p_subscribe_plugin_settings=>true
 ,p_help_text=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
 'Clockpicker item plugin for Apex',
-'In 24h format.',
+'In 24h and 12h format.',
 'Original from: http://weareoutman.github.io/clockpicker/'))
-,p_version_identifier=>'1.0'
-,p_about_url=>'http://blog.danielh.de/'
+,p_version_identifier=>'1.1'
+,p_about_url=>'https://github.com/Dani3lSun/apex-plugin-clockpicker'
 ,p_files_version=>14
 );
 wwv_flow_api.create_plugin_attribute(

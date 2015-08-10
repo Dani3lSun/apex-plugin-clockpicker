@@ -14,6 +14,7 @@ The plugin settings are highly customizable and you can change:
 - Placement (Top/Bottom)
 - Alignment (Left/Right)
 - Autoclose (True/False)
+- 12h Mode AM/PM (True/False)
 - Text of "Done" Button
 
 

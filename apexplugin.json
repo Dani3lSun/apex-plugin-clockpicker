@@ -3,7 +3,7 @@
   "version" : "1.1",
   "description" : "ClockPicker is a item type plugin that gives you a nice clock-style overlay above of an input field. It is based on JS Framework clockpicker",
   "keywords" : ["clockpicker", "timepicker"],
-  "homepage" : "https://github.com/Dani3lSun/apex-plugin-clockpicker"
+  "homepage" : "https://github.com/Dani3lSun/apex-plugin-clockpicker",
   "bugs" : {
     "url" : "https://github.com/Dani3lSun/apex-plugin-clockpicker/issues",
     "email" : "daniel@danielh.de"
@@ -12,7 +12,7 @@
   "author" : {
     "name" : "Daniel Hochleitner",
     "email" : "daniel@danielh.de",
-    "url" : "http://blog.danielh.de/",
+    "url" : "http://blog.danielh.de/"
   },
   "repository" : {
     "type" : "git",

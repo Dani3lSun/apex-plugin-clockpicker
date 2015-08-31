@@ -25,4 +25,6 @@ The plugin settings are highly customizable and you can change:
 ##Demo Application
 https://apex.oracle.com/pls/apex/f?p=57743:3
 
+##Preview
+![](https://github.com/Dani3lSun/apex-plugin-clockpicker/blob/master/preview.png)
 ---

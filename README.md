@@ -3,6 +3,8 @@ ClockPicker is a item type plugin that gives you a nice clock-style overlay abov
 It is based on JS Framework clockpicker (https://github.com/weareoutman/clockpicker).
 
 ##Changelog
+####1.3 - added source attribute to plugin (see issue #2)
+
 ####1.2 - fixes for problems with UT in Apex 5 (see issue #1)
 
 ####1.1 - added 12h mode (AM/PM Switch)

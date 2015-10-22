@@ -3,6 +3,8 @@ ClockPicker is a item type plugin that gives you a nice clock-style overlay abov
 It is based on JS Framework clockpicker (https://github.com/weareoutman/clockpicker).
 
 ##Changelog
+####1.4 - added possibility to suppress soft keyboard fade outs on mobile devices
+
 ####1.3 - added source attribute to plugin (see issue #2)
 
 ####1.2 - fixes for problems with UT in Apex 5 (see issue #1)
@@ -22,6 +24,7 @@ The plugin settings are highly customizable and you can change:
 - Autoclose (True/False)
 - 12h Mode AM/PM (True/False)
 - Text of "Done" Button
+- Suppress Mobile Keyboards
 
 
 ##Demo Application

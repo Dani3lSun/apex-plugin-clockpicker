@@ -1,6 +1,6 @@
 /*-------------------------------------
  * ClockPicker Functions
- * Version: 1.3 (02.09.2015)
+ * Version: 1.4 (22.10.2015)
  * Author:  Daniel Hochleitner
  *-------------------------------------
 */
@@ -13,14 +13,15 @@ FUNCTION render_clockpicker(p_item                IN apex_plugin.t_page_item,
   RETURN apex_plugin.t_page_item_render_result IS
 
   --
-  l_escaped_value VARCHAR2(1000);
-  l_result        apex_plugin.t_page_item_render_result;
-  l_name          VARCHAR2(30);
-  l_placement     apex_application_page_items.attribute_01%TYPE := p_item.attribute_01;
-  l_align         apex_application_page_items.attribute_02%TYPE := p_item.attribute_02;
-  l_autoclose     apex_application_page_items.attribute_03%TYPE := p_item.attribute_03;
-  l_done_btn_text apex_application_page_items.attribute_04%TYPE := p_item.attribute_04;
-  l_12h_mode      apex_application_page_items.attribute_04%TYPE := p_item.attribute_05;
+  l_escaped_value           VARCHAR2(1000);
+  l_result                  apex_plugin.t_page_item_render_result;
+  l_name                    VARCHAR2(30);
+  l_placement               apex_application_page_items.attribute_01%TYPE := p_item.attribute_01;
+  l_align                   apex_application_page_items.attribute_02%TYPE := p_item.attribute_02;
+  l_autoclose               apex_application_page_items.attribute_03%TYPE := p_item.attribute_03;
+  l_done_btn_text           apex_application_page_items.attribute_04%TYPE := p_item.attribute_04;
+  l_12h_mode                apex_application_page_items.attribute_05%TYPE := p_item.attribute_05;
+  l_suppress_soft_keyboards apex_application_page_items.attribute_06%TYPE := p_item.attribute_06;
 
   l_onload_string   VARCHAR2(2000);
   l_html_string     VARCHAR2(2000);
@@ -54,6 +55,11 @@ BEGIN
     l_html_string := l_html_string || 'id="' || l_element_item_id || '" ';
     l_html_string := l_html_string || 'value="' || l_escaped_value || '" ';
     l_html_string := l_html_string || 'size="' || p_item.element_width || '" ';
+    --
+    IF l_suppress_soft_keyboards = 1 OR l_suppress_soft_keyboards = '1' THEN
+      l_html_string := l_html_string || 'onfocus="blur();" ';
+    END IF;
+    --
     l_html_string := l_html_string || 'maxlength="' ||
                      p_item.element_max_length || '" ';
     l_html_string := l_html_string || ' ' || p_item.element_attributes ||

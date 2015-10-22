@@ -13,7 +13,7 @@ whenever sqlerror exit sql.sqlcode rollback
 begin
 wwv_flow_api.import_begin (
  p_version_yyyy_mm_dd=>'2013.01.01'
-,p_release=>'5.0.1.00.06'
+,p_release=>'5.0.2.00.06'
 ,p_default_workspace_id=>96713923238010156
 ,p_default_application_id=>57743
 ,p_default_owner=>'DHTEST'
@@ -36,7 +36,7 @@ wwv_flow_api.create_plugin(
 ,p_plsql_code=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
 '/*-------------------------------------',
 ' * ClockPicker Functions',
-' * Version: 1.3 (02.09.2015)',
+' * Version: 1.4 (22.10.2015)',
 ' * Author:  Daniel Hochleitner',
 ' *-------------------------------------',
 '*/',
@@ -49,14 +49,15 @@ wwv_flow_api.create_plugin(
 '  RETURN apex_plugin.t_page_item_render_result IS',
 '',
 '  --',
-'  l_escaped_value VARCHAR2(1000);',
-'  l_result        apex_plugin.t_page_item_render_result;',
-'  l_name          VARCHAR2(30);',
-'  l_placement     apex_application_page_items.attribute_01%TYPE := p_item.attribute_01;',
-'  l_align         apex_application_page_items.attribute_02%TYPE := p_item.attribute_02;',
-'  l_autoclose     apex_application_page_items.attribute_03%TYPE := p_item.attribute_03;',
-'  l_done_btn_text apex_application_page_items.attribute_04%TYPE := p_item.attribute_04;',
-'  l_12h_mode      apex_application_page_items.attribute_04%TYPE := p_item.attribute_05;',
+'  l_escaped_value           VARCHAR2(1000);',
+'  l_result                  apex_plugin.t_page_item_render_result;',
+'  l_name                    VARCHAR2(30);',
+'  l_placement               apex_application_page_items.attribute_01%TYPE := p_item.attribute_01;',
+'  l_align                   apex_application_page_items.attribute_02%TYPE := p_item.attribute_02;',
+'  l_autoclose               apex_application_page_items.attribute_03%TYPE := p_item.attribute_03;',
+'  l_done_btn_text           apex_application_page_items.attribute_04%TYPE := p_item.attribute_04;',
+'  l_12h_mode                apex_application_page_items.attribute_05%TYPE := p_item.attribute_05;',
+'  l_suppress_soft_keyboards apex_application_page_items.attribute_06%TYPE := p_item.attribute_06;',
 '',
 '  l_onload_string   VARCHAR2(2000);',
 '  l_html_string     VARCHAR2(2000);',
@@ -90,6 +91,11 @@ wwv_flow_api.create_plugin(
 '    l_html_string := l_html_string || ''id="'' || l_element_item_id || ''" '';',
 '    l_html_string := l_html_string || ''value="'' || l_escaped_value || ''" '';',
 '    l_html_string := l_html_string || ''size="'' || p_item.element_width || ''" '';',
+'    --',
+'    IF l_suppress_soft_keyboards = 1 OR l_suppress_soft_keyboards = ''1'' THEN',
+'      l_html_string := l_html_string || ''onfocus="blur();" '';',
+'    END IF;',
+'    --',
 '    l_html_string := l_html_string || ''maxlength="'' ||',
 '                     p_item.element_max_length || ''" '';',
 '    l_html_string := l_html_string || '' '' || p_item.element_attributes ||',
@@ -156,7 +162,7 @@ wwv_flow_api.create_plugin(
 'Clockpicker item plugin for Apex',
 'In 24h and 12h format.',
 'Original from: http://weareoutman.github.io/clockpicker/'))
-,p_version_identifier=>'1.2'
+,p_version_identifier=>'1.4'
 ,p_about_url=>'https://github.com/Dani3lSun/apex-plugin-clockpicker'
 ,p_files_version=>20
 );
@@ -295,6 +301,38 @@ wwv_flow_api.create_plugin_attr_value(
 ,p_display_sequence=>20
 ,p_display_value=>'False'
 ,p_return_value=>'false'
+);
+wwv_flow_api.create_plugin_attribute(
+ p_id=>wwv_flow_api.id(15351670688009165798)
+,p_plugin_id=>wwv_flow_api.id(11117833923977660441)
+,p_attribute_scope=>'COMPONENT'
+,p_attribute_sequence=>6
+,p_display_sequence=>60
+,p_prompt=>'Suppress Mobile Keyboards'
+,p_attribute_type=>'SELECT LIST'
+,p_is_required=>true
+,p_default_value=>'0'
+,p_is_translatable=>false
+,p_lov_type=>'STATIC'
+,p_help_text=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
+'Suppress the default behavior on mobile devices to fade out the soft keyboard.<br>',
+'If set to Yes no keyboard is shown on mobile devices, but the possibility to enter free text is also suppressed.'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(15351676100789170277)
+,p_plugin_attribute_id=>wwv_flow_api.id(15351670688009165798)
+,p_display_sequence=>10
+,p_display_value=>'Yes'
+,p_return_value=>'1'
+,p_help_text=>'Suppress soft keyboards and free text input'
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(15351742127452173386)
+,p_plugin_attribute_id=>wwv_flow_api.id(15351670688009165798)
+,p_display_sequence=>20
+,p_display_value=>'No'
+,p_return_value=>'0'
+,p_help_text=>'Default: Don´t suppress soft keyboards and free text inputs'
 );
 end;
 /

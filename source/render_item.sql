@@ -1,6 +1,6 @@
 /*-------------------------------------
  * ClockPicker Functions
- * Version: 1.4 (22.10.2015)
+ * Version: 1.5 (29.12.2015)
  * Author:  Daniel Hochleitner
  *-------------------------------------
 */

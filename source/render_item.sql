@@ -1,6 +1,6 @@
 /*-------------------------------------
  * ClockPicker Functions
- * Version: 1.5 (29.12.2015)
+ * Version: 1.6 (04.03.2016)
  * Author:  Daniel Hochleitner
  *-------------------------------------
 */
@@ -16,12 +16,13 @@ FUNCTION render_clockpicker(p_item                IN apex_plugin.t_page_item,
   l_escaped_value           VARCHAR2(1000);
   l_result                  apex_plugin.t_page_item_render_result;
   l_name                    VARCHAR2(30);
-  l_placement               apex_application_page_items.attribute_01%TYPE := p_item.attribute_01;
-  l_align                   apex_application_page_items.attribute_02%TYPE := p_item.attribute_02;
-  l_autoclose               apex_application_page_items.attribute_03%TYPE := p_item.attribute_03;
-  l_done_btn_text           apex_application_page_items.attribute_04%TYPE := p_item.attribute_04;
-  l_12h_mode                apex_application_page_items.attribute_05%TYPE := p_item.attribute_05;
-  l_suppress_soft_keyboards apex_application_page_items.attribute_06%TYPE := p_item.attribute_06;
+  l_placement               VARCHAR2(50) := p_item.attribute_01;
+  l_align                   VARCHAR2(50) := p_item.attribute_02;
+  l_autoclose               VARCHAR2(50) := p_item.attribute_03;
+  l_done_btn_text           VARCHAR2(100) := p_item.attribute_04;
+  l_12h_mode                VARCHAR2(50) := p_item.attribute_05;
+  l_suppress_soft_keyboards NUMBER := p_item.attribute_06;
+  l_show_clock_button       NUMBER := p_item.attribute_07;
 
   l_onload_string   VARCHAR2(2000);
   l_html_string     VARCHAR2(2000);
@@ -55,8 +56,8 @@ BEGIN
     l_html_string := l_html_string || 'id="' || l_element_item_id || '" ';
     l_html_string := l_html_string || 'value="' || l_escaped_value || '" ';
     l_html_string := l_html_string || 'size="' || p_item.element_width || '" ';
-    --
-    IF l_suppress_soft_keyboards = 1 OR l_suppress_soft_keyboards = '1' THEN
+    -- suppress soft keyboard
+    IF l_suppress_soft_keyboards = 1 THEN
       l_html_string := l_html_string || 'onfocus="blur();" ';
     END IF;
     --
@@ -64,6 +65,14 @@ BEGIN
                      p_item.element_max_length || '" ';
     l_html_string := l_html_string || ' ' || p_item.element_attributes ||
                      ' />';
+    -- show clock button
+    IF l_show_clock_button = 1 THEN
+      l_html_string := l_html_string ||
+                       '<a class="a-Button a-Button--popupLOV ' ||
+                       l_element_item_id ||
+                       '_button" href="javascript:void(0);"><span class="fa fa-clock-o"></span></a>';
+    END IF;
+    -- write item html
     htp.p(l_html_string);
     --
     -- Include the Bootstrap CSS
@@ -81,8 +90,8 @@ BEGIN
                                 p_skip_extension => FALSE);
     --
     -- JS Inline of the Page
-    l_onload_string := 'var input = $("#' || l_element_item_id ||
-                       '").clockpicker({' ||
+    l_onload_string := 'var ' || l_element_item_id || '_input = $("#' ||
+                       l_element_item_id || '").clockpicker({' ||
                        apex_javascript.add_attribute(p_name      => 'placement',
                                                      p_value     => l_placement,
                                                      p_add_comma => TRUE) ||
@@ -101,7 +110,13 @@ BEGIN
                        apex_javascript.add_attribute(p_name      => 'default',
                                                      p_value     => 'now',
                                                      p_add_comma => FALSE) ||
-                       '});';
+                       '});' || chr(10);
+    -- Button
+    IF l_show_clock_button = 1 THEN
+      l_onload_string := l_onload_string || '$(".' || l_element_item_id ||
+                         '_button").click(function(e){ e.stopPropagation(); ' ||
+                         l_element_item_id || '_input.clockpicker("show")' || '})';
+    END IF;
     -- Replace true/false quotes
     l_onload_string := REPLACE(REPLACE(l_onload_string,
                                        '"true"',

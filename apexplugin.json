@@ -1,6 +1,6 @@
 {
   "name" : "ClockPicker",
-  "version" : "1.5",
+  "version" : "1.6",
   "description" : "ClockPicker is a item type plugin that gives you a nice clock-style overlay above of an input field. It is based on JS Framework clockpicker",
   "keywords" : ["clockpicker", "timepicker", "time", "clock"],
   "homepage" : "https://github.com/Dani3lSun/apex-plugin-clockpicker",
@@ -25,7 +25,7 @@
       "plugin" : {
         "internalName" : "DE.DANIELH.CLOCKPICKER",
         "type" : "item",
-        "demo" : "https://apex.oracle.com/pls/apex/f?p=57743:3",
+        "demo" : "https://apex.oracle.com/pls/apex/f?p=APEXPLUGIN",
         "previewImage" : "https://raw.githubusercontent.com/Dani3lSun/apex-plugin-clockpicker/master/preview.png"
       }
     }

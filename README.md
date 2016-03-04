@@ -3,6 +3,8 @@ ClockPicker is a item type plugin that gives you a nice clock-style overlay abov
 It is based on JS Framework clockpicker (https://github.com/weareoutman/clockpicker).
 
 ##Changelog
+####1.6 - added possibility to show a clock button on right side
+
 ####1.5 - updated bootstrap to 3.3.6 and fixed css errors like issue #5
 
 ####1.4 - added possibility to suppress soft keyboard fade outs on mobile devices
@@ -30,7 +32,7 @@ The plugin settings are highly customizable and you can change:
 
 
 ##Demo Application
-https://apex.oracle.com/pls/apex/f?p=57743:3
+https://apex.oracle.com/pls/apex/f?p=APEXPLUGIN
 
 ##Preview
 ![](https://github.com/Dani3lSun/apex-plugin-clockpicker/blob/master/preview.png)

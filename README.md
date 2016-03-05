@@ -3,6 +3,8 @@ ClockPicker is a item type plugin that gives you a nice clock-style overlay abov
 It is based on JS Framework clockpicker (https://github.com/weareoutman/clockpicker).
 
 ##Changelog
+####1.6.1 - fixed clockpicker button style
+
 ####1.6 - added possibility to show a clock button on right side
 
 ####1.5 - updated bootstrap to 3.3.6 and fixed css errors like issue #5

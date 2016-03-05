@@ -1,21 +1,17 @@
 /*-------------------------------------
  * ClockPicker Functions
- * Version: 1.6 (04.03.2016)
+ * Version: 1.6.1 (05.03.2016)
  * Author:  Daniel Hochleitner
  *-------------------------------------
 */
-
 FUNCTION render_clockpicker(p_item                IN apex_plugin.t_page_item,
                             p_plugin              IN apex_plugin.t_plugin,
                             p_value               IN VARCHAR2,
                             p_is_readonly         IN BOOLEAN,
                             p_is_printer_friendly IN BOOLEAN)
   RETURN apex_plugin.t_page_item_render_result IS
-
-  --
-  l_escaped_value           VARCHAR2(1000);
+  -- plugin attributes
   l_result                  apex_plugin.t_page_item_render_result;
-  l_name                    VARCHAR2(30);
   l_placement               VARCHAR2(50) := p_item.attribute_01;
   l_align                   VARCHAR2(50) := p_item.attribute_02;
   l_autoclose               VARCHAR2(50) := p_item.attribute_03;
@@ -23,11 +19,13 @@ FUNCTION render_clockpicker(p_item                IN apex_plugin.t_page_item,
   l_12h_mode                VARCHAR2(50) := p_item.attribute_05;
   l_suppress_soft_keyboards NUMBER := p_item.attribute_06;
   l_show_clock_button       NUMBER := p_item.attribute_07;
-
+  -- other vars
+  l_name            VARCHAR2(30);
+  l_escaped_value   VARCHAR2(1000);
   l_onload_string   VARCHAR2(2000);
   l_html_string     VARCHAR2(2000);
   l_element_item_id VARCHAR2(200);
-
+  --
 BEGIN
   --
   -- Printer Friendly Display
@@ -68,9 +66,12 @@ BEGIN
     -- show clock button
     IF l_show_clock_button = 1 THEN
       l_html_string := l_html_string ||
-                       '<a class="a-Button a-Button--popupLOV ' ||
+                       '<a class="a-Button a-Button--popupLOV clockpicker-btn ' ||
                        l_element_item_id ||
                        '_button" href="javascript:void(0);"><span class="fa fa-clock-o"></span></a>';
+      -- button style
+      apex_css.add(p_css => '.clockpicker-btn { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.125) inset !important; }',
+                   p_key => 'clockpicker_style');
     END IF;
     -- write item html
     htp.p(l_html_string);

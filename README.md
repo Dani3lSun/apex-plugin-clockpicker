@@ -30,7 +30,8 @@ The plugin settings are highly customizable and you can change:
 - Autoclose (True/False)
 - 12h Mode AM/PM (True/False)
 - Text of "Done" Button
-- Suppress Mobile Keyboards
+- Show clock button (Yes/No)
+- Suppress Mobile Keyboards (Yes/No)
 
 
 ##Demo Application

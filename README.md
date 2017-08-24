@@ -1,4 +1,7 @@
 # Oracle APEX Item Plugin - ClockPicker
+
+[![APEX Community](https://cdn.rawgit.com/Dani3lSun/apex-github-badges/78c5adbe/badges/apex-community-badge.svg)](https://github.com/Dani3lSun/apex-github-badges) [![APEX Plugin](https://cdn.rawgit.com/Dani3lSun/apex-github-badges/b7e95341/badges/apex-plugin-badge.svg)](https://github.com/Dani3lSun/apex-github-badges)
+
 ClockPicker is a item type plugin that gives you a nice clock-style overlay above of an input field.
 It is based on JS Framework clockpicker (https://github.com/weareoutman/clockpicker).
 

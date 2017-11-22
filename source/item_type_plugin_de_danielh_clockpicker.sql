@@ -168,7 +168,7 @@ wwv_flow_api.create_plugin(
 '  --',
 '  p_result.is_navigable := TRUE;',
 'END render_clockpicker;'))
-,p_api_version=>1
+,p_api_version=>2
 ,p_render_function=>'render_clockpicker'
 ,p_standard_attributes=>'VISIBLE:SESSION_STATE:READONLY:ESCAPE_OUTPUT:SOURCE:ELEMENT:WIDTH:ELEMENT_OPTION'
 ,p_substitute_attributes=>true

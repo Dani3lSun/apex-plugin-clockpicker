@@ -5,18 +5,18 @@ whenever sqlerror exit sql.sqlcode rollback
 -- ORACLE Application Express (APEX) export file
 --
 -- You should run the script connected to SQL*Plus as the Oracle user
--- APEX_050000 or as the owner (parsing schema) of the application.
+-- APEX_050100 or as the owner (parsing schema) of the application.
 --
 -- NOTE: Calls to apex_application_install override the defaults below.
 --
 --------------------------------------------------------------------------------
 begin
 wwv_flow_api.import_begin (
- p_version_yyyy_mm_dd=>'2013.01.01'
-,p_release=>'5.0.4.00.12'
-,p_default_workspace_id=>42937890966776491
-,p_default_application_id=>600
-,p_default_owner=>'APEX_PLUGIN'
+ p_version_yyyy_mm_dd=>'2016.08.24'
+,p_release=>'5.1.3.00.05'
+,p_default_workspace_id=>2220339736195454
+,p_default_application_id=>100
+,p_default_owner=>'MKLEIN'
 );
 end;
 /
@@ -28,34 +28,36 @@ end;
 prompt --application/shared_components/plugins/item_type/de_danielh_clockpicker
 begin
 wwv_flow_api.create_plugin(
- p_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(11171144552317486570)
 ,p_plugin_type=>'ITEM TYPE'
 ,p_name=>'DE.DANIELH.CLOCKPICKER'
 ,p_display_name=>'ClockPicker'
 ,p_supported_ui_types=>'DESKTOP'
-,p_plsql_code=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
+,p_supported_component_types=>'APEX_APPLICATION_PAGE_ITEMS:APEX_APPL_PAGE_IG_COLUMNS'
+,p_plsql_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '/*-------------------------------------',
 ' * ClockPicker Functions',
 ' * Version: 1.7.0 (22.12.2016)',
 ' * Author:  Daniel Hochleitner',
+' *',
+' * Changes:',
+' * 22.11.2017 Moritz Klein: Change to new interface and enable for interactive Grid',
 ' *-------------------------------------',
 '*/',
-'FUNCTION render_clockpicker(p_item                IN apex_plugin.t_page_item,',
-'                            p_plugin              IN apex_plugin.t_plugin,',
-'                            p_value               IN VARCHAR2,',
-'                            p_is_readonly         IN BOOLEAN,',
-'                            p_is_printer_friendly IN BOOLEAN)',
-'  RETURN apex_plugin.t_page_item_render_result IS',
+'PROCEDURE render_clockpicker(p_item  in            apex_plugin.t_page_item,',
+'                            p_plugin in            apex_plugin.t_plugin,',
+'                            p_param  in            apex_plugin.t_item_render_param,',
+'                            p_result in out nocopy apex_plugin.t_item_render_result)',
+'IS',
 '  -- plugin attributes',
-'  l_result                  apex_plugin.t_page_item_render_result;',
-'  l_placement               VARCHAR2(50) := p_item.attribute_01;',
-'  l_align                   VARCHAR2(50) := p_item.attribute_02;',
-'  l_autoclose               VARCHAR2(50) := p_item.attribute_03;',
+'  l_placement               VARCHAR2(50)  := p_item.attribute_01;',
+'  l_align                   VARCHAR2(50)  := p_item.attribute_02;',
+'  l_autoclose               VARCHAR2(50)  := p_item.attribute_03;',
 '  l_done_btn_text           VARCHAR2(100) := p_item.attribute_04;',
-'  l_12h_mode                VARCHAR2(50) := p_item.attribute_05;',
-'  l_suppress_soft_keyboards NUMBER := p_item.attribute_06;',
-'  l_show_clock_button       NUMBER := p_item.attribute_07;',
-'  l_logging                 VARCHAR2(50) := p_item.attribute_08;',
+'  l_12h_mode                VARCHAR2(50)  := p_item.attribute_05;',
+'  l_suppress_soft_keyboards NUMBER        := p_item.attribute_06;',
+'  l_show_clock_button       NUMBER        := p_item.attribute_07;',
+'  l_logging                 VARCHAR2(50)  := p_item.attribute_08;',
 '  -- other vars',
 '  l_name            VARCHAR2(30);',
 '  l_escaped_value   VARCHAR2(1000);',
@@ -66,24 +68,24 @@ wwv_flow_api.create_plugin(
 'BEGIN',
 '  --',
 '  -- Printer Friendly Display',
-'  IF p_is_printer_friendly THEN',
+'  IF p_param.is_printer_friendly THEN',
 '    apex_plugin_util.print_display_only(p_item_name        => p_item.name,',
-'                                        p_display_value    => p_value,',
+'                                        p_display_value    => p_param.value,',
 '                                        p_show_line_breaks => FALSE,',
 '                                        p_escape           => TRUE,',
 '                                        p_attributes       => p_item.element_attributes);',
 '    -- Read Only Display',
-'  ELSIF p_is_readonly THEN',
+'  ELSIF p_param.is_readonly THEN',
 '    apex_plugin_util.print_hidden_if_readonly(p_item_name           => p_item.name,',
-'                                              p_value               => p_value,',
-'                                              p_is_readonly         => p_is_readonly,',
-'                                              p_is_printer_friendly => p_is_printer_friendly);',
+'                                              p_value               => p_param.value,',
+'                                              p_is_readonly         => p_param.is_readonly,',
+'                                              p_is_printer_friendly => p_param.is_printer_friendly);',
 '    -- Normal Display',
 '  ELSE',
 '    --',
 '    l_element_item_id := p_item.name;',
-'    l_name            := apex_plugin.get_input_name_for_page_item(FALSE);',
-'    l_escaped_value   := apex_escape.html(p_value);',
+'    l_name            := apex_plugin.get_input_name_for_item;',
+'    l_escaped_value   := apex_escape.html(p_param.value);',
 '    --',
 '    l_html_string := ''<input '';',
 '    l_html_string := l_html_string || ''type="text" '';',
@@ -164,26 +166,24 @@ wwv_flow_api.create_plugin(
 '    --',
 '  END IF;',
 '  --',
-'  l_result.is_navigable := TRUE;',
-'  --',
-'  RETURN(l_result);',
-'  --',
+'  p_result.is_navigable := TRUE;',
 'END render_clockpicker;'))
+,p_api_version=>2
 ,p_render_function=>'render_clockpicker'
 ,p_standard_attributes=>'VISIBLE:SESSION_STATE:READONLY:ESCAPE_OUTPUT:SOURCE:ELEMENT:WIDTH:ELEMENT_OPTION'
 ,p_substitute_attributes=>true
 ,p_subscribe_plugin_settings=>true
-,p_help_text=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'Clockpicker item plugin for APEX',
 'In 24h and 12h format.',
 'Original from: http://weareoutman.github.io/clockpicker/'))
-,p_version_identifier=>'1.7.0'
+,p_version_identifier=>'1.8.0'
 ,p_about_url=>'https://github.com/Dani3lSun/apex-plugin-clockpicker'
 ,p_files_version=>29
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(11160773561439458176)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(11171144728891486575)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>1
 ,p_display_sequence=>10
@@ -193,28 +193,28 @@ wwv_flow_api.create_plugin_attribute(
 ,p_default_value=>'bottom'
 ,p_is_translatable=>false
 ,p_lov_type=>'STATIC'
-,p_help_text=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<strong>Placement:</strong><br>',
 '- bottom (default)<br>',
 '- top <br>'))
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(11160791593508593446)
-,p_plugin_attribute_id=>wwv_flow_api.id(11160773561439458176)
+ p_id=>wwv_flow_api.id(11171162760960621845)
+,p_plugin_attribute_id=>wwv_flow_api.id(11171144728891486575)
 ,p_display_sequence=>10
 ,p_display_value=>'Bottom'
 ,p_return_value=>'bottom'
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(11160792013209593910)
-,p_plugin_attribute_id=>wwv_flow_api.id(11160773561439458176)
+ p_id=>wwv_flow_api.id(11171163180661622309)
+,p_plugin_attribute_id=>wwv_flow_api.id(11171144728891486575)
 ,p_display_sequence=>20
 ,p_display_value=>'Top'
 ,p_return_value=>'top'
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(11160829572435148527)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(11171200739887176926)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>2
 ,p_display_sequence=>20
@@ -224,28 +224,28 @@ wwv_flow_api.create_plugin_attribute(
 ,p_default_value=>'left'
 ,p_is_translatable=>false
 ,p_lov_type=>'STATIC'
-,p_help_text=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<strong>Placement:</strong><br>',
 '- Left (default)<br>',
 '- Right <br>'))
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(11160830238594149069)
-,p_plugin_attribute_id=>wwv_flow_api.id(11160829572435148527)
+ p_id=>wwv_flow_api.id(11171201406046177468)
+,p_plugin_attribute_id=>wwv_flow_api.id(11171200739887176926)
 ,p_display_sequence=>10
 ,p_display_value=>'Left'
 ,p_return_value=>'left'
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(11160830576995149791)
-,p_plugin_attribute_id=>wwv_flow_api.id(11160829572435148527)
+ p_id=>wwv_flow_api.id(11171201744447178190)
+,p_plugin_attribute_id=>wwv_flow_api.id(11171200739887176926)
 ,p_display_sequence=>20
 ,p_display_value=>'Right'
 ,p_return_value=>'right'
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(11160774433965458179)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(11171145601417486578)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>3
 ,p_display_sequence=>30
@@ -255,28 +255,28 @@ wwv_flow_api.create_plugin_attribute(
 ,p_default_value=>'true'
 ,p_is_translatable=>false
 ,p_lov_type=>'STATIC'
-,p_help_text=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<strong>Autoclose:</strong><br>',
 '- True (default)<br>',
 '- False <br>'))
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(11160794595522612081)
-,p_plugin_attribute_id=>wwv_flow_api.id(11160774433965458179)
+ p_id=>wwv_flow_api.id(11171165762974640480)
+,p_plugin_attribute_id=>wwv_flow_api.id(11171145601417486578)
 ,p_display_sequence=>10
 ,p_display_value=>'True'
 ,p_return_value=>'true'
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(11160794962499612776)
-,p_plugin_attribute_id=>wwv_flow_api.id(11160774433965458179)
+ p_id=>wwv_flow_api.id(11171166129951641175)
+,p_plugin_attribute_id=>wwv_flow_api.id(11171145601417486578)
 ,p_display_sequence=>20
 ,p_display_value=>'False'
 ,p_return_value=>'false'
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(11160989924686182320)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(11171361092138210719)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>4
 ,p_display_sequence=>40
@@ -285,13 +285,13 @@ wwv_flow_api.create_plugin_attribute(
 ,p_is_required=>true
 ,p_default_value=>'Done'
 ,p_is_translatable=>true
-,p_help_text=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<strong>Done Button Text:</strong><br>',
 'When set to "autoclose false" a done button to close is displayed. Enter the displayed text.'))
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(11296045672954927425)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(11306416840406955824)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>5
 ,p_display_sequence=>35
@@ -304,22 +304,22 @@ wwv_flow_api.create_plugin_attribute(
 ,p_help_text=>'Choose if 12h mode (am/pm) is on or off.'
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(11296047502438928239)
-,p_plugin_attribute_id=>wwv_flow_api.id(11296045672954927425)
+ p_id=>wwv_flow_api.id(11306418669890956638)
+,p_plugin_attribute_id=>wwv_flow_api.id(11306416840406955824)
 ,p_display_sequence=>10
 ,p_display_value=>'True'
 ,p_return_value=>'true'
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(11296048371479928988)
-,p_plugin_attribute_id=>wwv_flow_api.id(11296045672954927425)
+ p_id=>wwv_flow_api.id(11306419538931957387)
+,p_plugin_attribute_id=>wwv_flow_api.id(11306416840406955824)
 ,p_display_sequence=>20
 ,p_display_value=>'False'
 ,p_return_value=>'false'
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(15394610148896963528)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(15404981316348991927)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>6
 ,p_display_sequence=>60
@@ -329,29 +329,29 @@ wwv_flow_api.create_plugin_attribute(
 ,p_default_value=>'0'
 ,p_is_translatable=>false
 ,p_lov_type=>'STATIC'
-,p_help_text=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'Suppress the default behavior on mobile devices to fade out the soft keyboard.<br>',
 'If set to Yes no keyboard is shown on mobile devices, but the possibility to enter free text is also suppressed.'))
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(15394615561676968007)
-,p_plugin_attribute_id=>wwv_flow_api.id(15394610148896963528)
+ p_id=>wwv_flow_api.id(15404986729128996406)
+,p_plugin_attribute_id=>wwv_flow_api.id(15404981316348991927)
 ,p_display_sequence=>10
 ,p_display_value=>'Yes'
 ,p_return_value=>'1'
 ,p_help_text=>'Suppress soft keyboards and free text input'
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(15394681588339971116)
-,p_plugin_attribute_id=>wwv_flow_api.id(15394610148896963528)
+ p_id=>wwv_flow_api.id(15405052755791999515)
+,p_plugin_attribute_id=>wwv_flow_api.id(15404981316348991927)
 ,p_display_sequence=>20
 ,p_display_value=>'No'
 ,p_return_value=>'0'
 ,p_help_text=>'Default: Don´t suppress soft keyboards and free text inputs'
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(48439804330349497)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(58810971782377896)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>7
 ,p_display_sequence=>45
@@ -364,22 +364,22 @@ wwv_flow_api.create_plugin_attribute(
 ,p_help_text=>'Choose if a small button with clock icon is shown on right side of item'
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(48441623115350132)
-,p_plugin_attribute_id=>wwv_flow_api.id(48439804330349497)
+ p_id=>wwv_flow_api.id(58812790567378531)
+,p_plugin_attribute_id=>wwv_flow_api.id(58810971782377896)
 ,p_display_sequence=>10
 ,p_display_value=>'Yes'
 ,p_return_value=>'1'
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(48442052983350580)
-,p_plugin_attribute_id=>wwv_flow_api.id(48439804330349497)
+ p_id=>wwv_flow_api.id(58813220435378979)
+,p_plugin_attribute_id=>wwv_flow_api.id(58810971782377896)
 ,p_display_sequence=>20
 ,p_display_value=>'No'
 ,p_return_value=>'0'
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(64081054007377014)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(74452221459405413)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>8
 ,p_display_sequence=>80
@@ -392,15 +392,15 @@ wwv_flow_api.create_plugin_attribute(
 ,p_help_text=>'Whether to log events in the console.'
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(64083146190377919)
-,p_plugin_attribute_id=>wwv_flow_api.id(64081054007377014)
+ p_id=>wwv_flow_api.id(74454313642406318)
+,p_plugin_attribute_id=>wwv_flow_api.id(74452221459405413)
 ,p_display_sequence=>10
 ,p_display_value=>'True'
 ,p_return_value=>'true'
 );
 wwv_flow_api.create_plugin_attr_value(
- p_id=>wwv_flow_api.id(64083559303378711)
-,p_plugin_attribute_id=>wwv_flow_api.id(64081054007377014)
+ p_id=>wwv_flow_api.id(74454726755407110)
+,p_plugin_attribute_id=>wwv_flow_api.id(74452221459405413)
 ,p_display_sequence=>20
 ,p_display_value=>'False'
 ,p_return_value=>'false'
@@ -444,8 +444,8 @@ end;
 /
 begin
 wwv_flow_api.create_plugin_file(
- p_id=>wwv_flow_api.id(64086062670380504)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(74457230122408903)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_file_name=>'js/apexclockpicker.js'
 ,p_mime_type=>'application/javascript'
 ,p_file_charset=>'utf-8'
@@ -475,8 +475,8 @@ end;
 /
 begin
 wwv_flow_api.create_plugin_file(
- p_id=>wwv_flow_api.id(64086495245381117)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(74457662697409516)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_file_name=>'js/apexclockpicker.min.js'
 ,p_mime_type=>'application/javascript'
 ,p_file_charset=>'utf-8'
@@ -523,8 +523,8 @@ end;
 /
 begin
 wwv_flow_api.create_plugin_file(
- p_id=>wwv_flow_api.id(11274289361981384017)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(11284660529433412416)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_file_name=>'css/bootstrap-clockpicker.min.css'
 ,p_mime_type=>'text/css'
 ,p_file_charset=>'utf-8'
@@ -651,8 +651,8 @@ end;
 /
 begin
 wwv_flow_api.create_plugin_file(
- p_id=>wwv_flow_api.id(11274290145332384028)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(11284661312784412427)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_file_name=>'js/bootstrap-clockpicker.min.js'
 ,p_mime_type=>'application/javascript'
 ,p_file_charset=>'utf-8'
@@ -928,8 +928,8 @@ end;
 /
 begin
 wwv_flow_api.create_plugin_file(
- p_id=>wwv_flow_api.id(11555434362678693833)
-,p_plugin_id=>wwv_flow_api.id(11160773384865458171)
+ p_id=>wwv_flow_api.id(11565805530130722232)
+,p_plugin_id=>wwv_flow_api.id(11171144552317486570)
 ,p_file_name=>'css/bootstrap.min.css'
 ,p_mime_type=>'text/css'
 ,p_file_charset=>'utf-8'

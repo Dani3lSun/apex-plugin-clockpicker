@@ -2,24 +2,25 @@
  * ClockPicker Functions
  * Version: 1.7.0 (22.12.2016)
  * Author:  Daniel Hochleitner
+ *
+ * Changes:
+ * 22.11.2017 Moritz Klein: Change to new interface and enable for interactive Grid
  *-------------------------------------
 */
-FUNCTION render_clockpicker(p_item                IN apex_plugin.t_page_item,
-                            p_plugin              IN apex_plugin.t_plugin,
-                            p_value               IN VARCHAR2,
-                            p_is_readonly         IN BOOLEAN,
-                            p_is_printer_friendly IN BOOLEAN)
-  RETURN apex_plugin.t_page_item_render_result IS
+PROCEDURE render_clockpicker(p_item  in            apex_plugin.t_page_item,
+                            p_plugin in            apex_plugin.t_plugin,
+                            p_param  in            apex_plugin.t_item_render_param,
+                            p_result in out nocopy apex_plugin.t_item_render_result)
+IS
   -- plugin attributes
-  l_result                  apex_plugin.t_page_item_render_result;
-  l_placement               VARCHAR2(50) := p_item.attribute_01;
-  l_align                   VARCHAR2(50) := p_item.attribute_02;
-  l_autoclose               VARCHAR2(50) := p_item.attribute_03;
+  l_placement               VARCHAR2(50)  := p_item.attribute_01;
+  l_align                   VARCHAR2(50)  := p_item.attribute_02;
+  l_autoclose               VARCHAR2(50)  := p_item.attribute_03;
   l_done_btn_text           VARCHAR2(100) := p_item.attribute_04;
-  l_12h_mode                VARCHAR2(50) := p_item.attribute_05;
-  l_suppress_soft_keyboards NUMBER := p_item.attribute_06;
-  l_show_clock_button       NUMBER := p_item.attribute_07;
-  l_logging                 VARCHAR2(50) := p_item.attribute_08;
+  l_12h_mode                VARCHAR2(50)  := p_item.attribute_05;
+  l_suppress_soft_keyboards NUMBER        := p_item.attribute_06;
+  l_show_clock_button       NUMBER        := p_item.attribute_07;
+  l_logging                 VARCHAR2(50)  := p_item.attribute_08;
   -- other vars
   l_name            VARCHAR2(30);
   l_escaped_value   VARCHAR2(1000);
@@ -30,24 +31,24 @@ FUNCTION render_clockpicker(p_item                IN apex_plugin.t_page_item,
 BEGIN
   --
   -- Printer Friendly Display
-  IF p_is_printer_friendly THEN
+  IF p_param.is_printer_friendly THEN
     apex_plugin_util.print_display_only(p_item_name        => p_item.name,
-                                        p_display_value    => p_value,
+                                        p_display_value    => p_param.value,
                                         p_show_line_breaks => FALSE,
                                         p_escape           => TRUE,
                                         p_attributes       => p_item.element_attributes);
     -- Read Only Display
-  ELSIF p_is_readonly THEN
+  ELSIF p_param.is_readonly THEN
     apex_plugin_util.print_hidden_if_readonly(p_item_name           => p_item.name,
-                                              p_value               => p_value,
-                                              p_is_readonly         => p_is_readonly,
-                                              p_is_printer_friendly => p_is_printer_friendly);
+                                              p_value               => p_param.value,
+                                              p_is_readonly         => p_param.is_readonly,
+                                              p_is_printer_friendly => p_param.is_printer_friendly);
     -- Normal Display
   ELSE
     --
     l_element_item_id := p_item.name;
-    l_name            := apex_plugin.get_input_name_for_page_item(FALSE);
-    l_escaped_value   := apex_escape.html(p_value);
+    l_name            := apex_plugin.get_input_name_for_item;
+    l_escaped_value   := apex_escape.html(p_param.value);
     --
     l_html_string := '<input ';
     l_html_string := l_html_string || 'type="text" ';
@@ -128,8 +129,5 @@ BEGIN
     --
   END IF;
   --
-  l_result.is_navigable := TRUE;
-  --
-  RETURN(l_result);
-  --
+  p_result.is_navigable := TRUE;
 END render_clockpicker;
